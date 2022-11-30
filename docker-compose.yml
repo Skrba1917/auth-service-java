@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  authservice:
+    container_name: authservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlbaza:3306/authbaza
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_USERNAME: root
+#      DB_PORT: 3307
+  mysqlbaza:
+    image: mysql
+    container_name: mysqlbaza
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_DATABASE: authbaza
+    ports:
+      - 3307:3306
+    volumes:
+      - ./baza:/mysql/data
+
+
+  mongodb:
+    image: mongo
+#    restart: always
+    ports:
+      - 27017:27017
+    container_name: mongodb
+    volumes:
+      - ./mongobaza:/mongodb/data
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+
+  registracija:
+    build:
+      context: ~/Desktop/pavlov/registration
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8082:8082
+    container_name: registracija
+    environment:
+      MONGO_DB_URL: mongodb://mongodb:27017
+#    depends_on:
+#      - mongodb
+    links:
+      - mongodb
