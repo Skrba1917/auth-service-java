@@ -73,3 +73,6 @@ services:
     ports:
       - 8443:8443
 
+
+    # Promenjeno sve na on failure, stavljen api gateway
+

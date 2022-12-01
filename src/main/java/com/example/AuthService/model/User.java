@@ -3,15 +3,9 @@ package com.example.AuthService.model;
 import static javax.persistence.DiscriminatorType.STRING;
 import static javax.persistence.InheritanceType.SINGLE_TABLE;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Inheritance;
+import javax.persistence.*;
 
-	@Entity
+@Entity
 	@Inheritance(strategy=SINGLE_TABLE)
 	@DiscriminatorColumn(name="type", discriminatorType=STRING)
 	public class User {

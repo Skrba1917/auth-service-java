@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.example.AuthService.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.AuthService.dto.ChangePasswordDTO;
-import com.example.AuthService.dto.LoginDTO;
-import com.example.AuthService.dto.RegisterDTO;
-import com.example.AuthService.dto.TokenDTO;
-import com.example.AuthService.dto.UserPassDTO;
 import com.example.AuthService.model.AuthControl;
 import com.example.AuthService.model.ERole;
 import com.example.AuthService.repository.AuthControlRepository;
@@ -118,6 +114,40 @@ public class UserController {
     		
        
     }
+
+	@PostMapping(value = "/businessregister", consumes = "application/json")
+	public ResponseEntity<BusinessPassDTO> registerBusiness(@RequestBody BusinessRegisterDTO bla){
+
+		List<AuthControl> allUsers = authControlRepository.findAll();
+		for(AuthControl i : allUsers) {
+			if (i.getUsername().equals(bla.getUsername())) {
+				throw new ResponseStatusException(
+						HttpStatus.FORBIDDEN, "Username Taken");
+			}
+		}
+
+		AuthControl x = new AuthControl();
+		x.setUsername(bla.getUsername());
+		x.setPassword(passwordEncoder.encode(bla.getPassword()));
+		x.setRole(ERole.valueOf(bla.getRole()));
+		authControlRepository.save(x);
+
+		BusinessPassDTO businessPass = new BusinessPassDTO();
+		businessPass.setUsername(bla.getUsername());
+		businessPass.setCompanyName(bla.getCompanyName());
+		businessPass.setEmail(bla.getEmail());
+		businessPass.setWebsite(bla.getWebsite());
+
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<BusinessPassDTO> request = new HttpEntity<>(businessPass);
+
+		String serviceUrl = "http://registracija:8082/users/business";
+		UserPassDTO UserPassResponse = restTemplate.postForObject(serviceUrl,
+				request, UserPassDTO.class);
+		return new ResponseEntity<BusinessPassDTO>(businessPass, HttpStatus.CREATED);
+
+
+	}
 //    
 //    @PostMapping(value="/changepassword", consumes ="application/json")
 //    public ResponseEntity  changePassword(@RequestBody ChangePasswordDTO changePasswordDTO, HttpServletResponse response) {
