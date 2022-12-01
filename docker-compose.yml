@@ -38,7 +38,8 @@ services:
 
   mongo-express:
     image: mongo-express
-    restart: always
+    restart: on-failure
+    container_name: mongo-express
     ports:
       - 8081:8081
     environment:
@@ -50,15 +51,25 @@ services:
 
   registracija:
     build:
-      context: ~/Desktop/pavlov/registration
+      context: ~/Desktop/pavlov/register-service-java
       dockerfile: Dockerfile
-    restart: always
+    restart: on-failure
+    container_name: registracija
     ports:
       - 8082:8082
-    container_name: registracija
     environment:
       MONGO_DB_URL: mongodb://mongodb:27017
 #    depends_on:
 #      - mongodb
     links:
       - mongodb
+
+  api-gateway:
+    build:
+      context: ~/Desktop/pavlov/api-gateway-java
+      dockerfile: Dockerfile
+    restart: on-failure
+    container_name: api-gateway
+    ports:
+      - 8443:8443
+
