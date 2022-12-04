@@ -31,9 +31,6 @@ import com.example.AuthService.security.TokenUtils;
 import com.example.AuthService.service.AuthControlService;
 
 
-
-
-
 @RestController
 @RequestMapping("/auth")
 public class UserController {
