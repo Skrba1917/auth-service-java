@@ -9,6 +9,7 @@ import javax.validation.constraints.Pattern;
 public class BusinessRegisterDTO {
 
     @NotBlank
+    @Pattern(regexp = "[a-zA-Z0-9]{1,30}\"",message = "Invalide username format")
     private String username;
     @Pattern(regexp="^[a-zA-Z0-9]{8,30}", message="The password is invalid IDIOTA")
     private String password;
