@@ -64,14 +64,14 @@ services:
     links:
       - mongodb
 
-  # api-gateway:
-  #   build:
-  #     context: ~/Desktop/pavlov/api-gateway-java
-  #     dockerfile: Dockerfile
-  #   restart: on-failure
-  #   container_name: api-gateway
-  #   ports:
-  #     - 8083:8083
+#  api-gateway:
+#     build:
+#       context: ~/Desktop/pavlov/api-gateway-java
+#       dockerfile: Dockerfile
+#     restart: on-failure
+#     container_name: api-gateway
+#     ports:
+#       - 8083:8083
 
 
     # Promenjeno sve na on failure, stavljen api gateway

@@ -18,6 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 	        registry.addMapping("/**").allowedOrigins("http://localhost:8083");
 		 	registry.addMapping("/**").allowedOrigins("https://localhost:8443");
 		 	registry.addMapping("/**").allowedOrigins("http://localhost:8443");
+			 registry.addMapping("/**").allowedOrigins("http://api-gateway:8083");
 	        registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE");
 	    }
 }

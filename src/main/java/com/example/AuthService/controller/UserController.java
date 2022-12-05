@@ -3,6 +3,7 @@ package com.example.AuthService.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import com.example.AuthService.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class UserController {
     TokenUtils tokenUtils;
    
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> createAuthenticationToken(
+    public ResponseEntity<TokenDTO> createAuthenticationToken(@Valid
             @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
 
         // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
@@ -76,7 +77,7 @@ public class UserController {
     }
     
     @PostMapping(value = "/",consumes = "application/json")
-    public ResponseEntity<UserPassDTO> register(
+    public ResponseEntity<UserPassDTO> register(@Valid
             @RequestBody RegisterDTO registerDTO, HttpServletResponse response) {
     	
     		List<AuthControl> allUsers = authControlRepository.findAll();
@@ -86,34 +87,40 @@ public class UserController {
     				           HttpStatus.FORBIDDEN, "Username Taken");
     				    }
     			}
-    		
-    		AuthControl x = new AuthControl();
-    		x.setUsername(registerDTO.getUsername());
-    		x.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-    		x.setRole(ERole.valueOf(registerDTO.getRole()));
-    		authControlRepository.save(x);
-    		
-    		UserPassDTO userPass = new UserPassDTO();
-    		userPass.setAge(registerDTO.getAge());
-    		userPass.setCity(registerDTO.getCity());
-    		userPass.setName(registerDTO.getName());
-    		userPass.setSex(registerDTO.getSex());
-    		userPass.setSurname(registerDTO.getSurname());
-    		userPass.setUsername(registerDTO.getUsername());
-    		
-    		RestTemplate restTemplate = new RestTemplate();
-    		HttpEntity<UserPassDTO> request = new HttpEntity<>(userPass);
-    		
-    		String serviceUrl = "http://registracija:8082/users/";
-    		 UserPassDTO UserPassResponse = restTemplate.postForObject(serviceUrl, 
-    		  request, UserPassDTO.class);
-		return new ResponseEntity<UserPassDTO>(userPass, HttpStatus.CREATED);
-    		
-       
+
+//		final String pattern = "^[a-zA-Z0-9].{8,}";
+
+
+
+				AuthControl x = new AuthControl();
+				x.setUsername(registerDTO.getUsername());
+				x.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+				x.setRole(ERole.valueOf(registerDTO.getRole()));
+				authControlRepository.save(x);
+
+				UserPassDTO userPass = new UserPassDTO();
+				userPass.setAge(registerDTO.getAge());
+				userPass.setCity(registerDTO.getCity());
+				userPass.setName(registerDTO.getName());
+				userPass.setSex(registerDTO.getSex());
+				userPass.setSurname(registerDTO.getSurname());
+				userPass.setUsername(registerDTO.getUsername());
+
+				RestTemplate restTemplate = new RestTemplate();
+				HttpEntity<UserPassDTO> request = new HttpEntity<>(userPass);
+
+				String serviceUrl = "http://registracija:8082/users/";
+				UserPassDTO UserPassResponse = restTemplate.postForObject(serviceUrl,
+						request, UserPassDTO.class);
+				return new ResponseEntity<UserPassDTO>(userPass, HttpStatus.CREATED);
+
+
+
+
     }
 
 	@PostMapping(value = "/businessregister", consumes = "application/json")
-	public ResponseEntity<BusinessPassDTO> registerBusiness(@RequestBody BusinessRegisterDTO bla){
+	public ResponseEntity<BusinessPassDTO> registerBusiness(@Valid @RequestBody BusinessRegisterDTO bla){
 
 		List<AuthControl> allUsers = authControlRepository.findAll();
 		for(AuthControl i : allUsers) {

@@ -2,16 +2,24 @@ package com.example.AuthService.dto;
 
 import com.example.AuthService.model.ERole;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 public class BusinessRegisterDTO {
 
+    @NotBlank
     private String username;
-
+    @Pattern(regexp="^[a-zA-Z0-9]{8,30}", message="The password is invalid IDIOTA")
     private String password;
 
+    @NotBlank
     private String companyName;
 
+    @NotBlank
     private String email;
 
+    @NotBlank
     private String website;
 
     private String role;

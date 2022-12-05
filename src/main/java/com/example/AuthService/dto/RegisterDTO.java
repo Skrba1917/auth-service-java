@@ -1,13 +1,26 @@
 package com.example.AuthService.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 public class RegisterDTO {
-	
+
+
+	@NotBlank
 	private String username;
+	@Pattern(regexp="^[a-zA-Z0-9]{8}", message="The password is invalid")
 	private String password;
+	@NotBlank
 	private String sex;
+	@NotBlank
+	@Pattern(regexp="^[0-9]", message="Age is invalid IDIOta")
 	private int age;
+	@NotBlank
 	private String city;
+	@NotBlank
 	private String name;
+	@NotBlank
 	private String surname;
 	private String role;
 	
