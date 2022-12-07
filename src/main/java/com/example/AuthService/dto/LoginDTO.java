@@ -9,7 +9,7 @@ public class LoginDTO {
 
 
 	@NotBlank
-	@Pattern(regexp = "[a-zA-Z0-9]{1,30}\"",message = "Invalide username format")
+	@Pattern(regexp = "^[a-zA-Z0-9]{1,30}",message = "Invalide username format")
 	private String username;
 		@Pattern(regexp="^[a-zA-Z0-9]{8}", message="The password is invalid dumb")
 	    private String password;

@@ -8,14 +8,14 @@ public class RegisterDTO {
 
 
 	@NotBlank
-	@Pattern(regexp = "[a-zA-Z0-9]{1,30}\"",message = "Invalide username format")
+	@Pattern(regexp = "^[a-zA-Z0-9]{1,30}",message = "Invalide username format")
 	private String username;
 	@Pattern(regexp="^[a-zA-Z0-9]{8}", message="The password is invalid")
 	private String password;
 	@NotBlank
 	private String sex;
-	@NotBlank
-	@Pattern(regexp="^[0-9]", message="Age is invalid IDIOta")
+
+
 	private int age;
 	@NotBlank
 	private String city;
