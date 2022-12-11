@@ -26,10 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -118,7 +115,7 @@ public class UserController {
 					mailService.sendMail(new NotificationEmail("Please activate your account",
 					x.getEmail(), "Thank you for signing up to Spring Reddit, " +
 					"please click on the below url to activate your account : " +
-					"http://localhost:8080/api/auth/accountVerification/" + token));
+					"http://localhost:8080/auth/accountVerification/" + token));
 
 
 
@@ -227,5 +224,13 @@ public class UserController {
     	  return new ResponseEntity(HttpStatus.BAD_REQUEST);
       
     }
+
+
+	@GetMapping("accountVerification/{mytoken}")
+	public ResponseEntity<String> verifiedAccount(@PathVariable String mytoken) {
+		verifyAccount(mytoken);
+
+		return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
+	}
 
 }
