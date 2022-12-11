@@ -15,7 +15,6 @@ public class RegisterDTO {
 	@NotBlank
 	private String sex;
 
-
 	private int age;
 	@NotBlank
 	private String city;

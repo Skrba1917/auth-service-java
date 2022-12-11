@@ -26,7 +26,18 @@ public class AuthControl {
 	@Column(name="Role", unique=false, nullable=false)
 	private ERole Role;
 
-	
+	@Column(name="Email", unique = false, nullable = false)
+	private String email;
+
+	private boolean enabled;
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	public ERole getRole() {
 		return Role;
@@ -51,8 +62,15 @@ public class AuthControl {
 	public void setPassword(String password) {
 		Password = password;
 	}
-	
-	
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public AuthControl() {
 		
 	}

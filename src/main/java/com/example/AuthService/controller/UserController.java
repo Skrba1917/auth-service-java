@@ -1,11 +1,19 @@
 package com.example.AuthService.controller;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import com.example.AuthService.dto.*;
+import com.example.AuthService.exceptions.SpringTwitterException;
+import com.example.AuthService.model.NotificationEmail;
+import com.example.AuthService.model.VerificationToken;
+import com.example.AuthService.repository.VerificationTokenRepository;
+import com.example.AuthService.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -40,6 +48,9 @@ public class UserController {
    @Autowired
    private AuthControlRepository authControlRepository;
 
+   @Autowired
+	private MailService mailService;
+
     @Autowired
     UserDetailsService userDetailsService;
 
@@ -48,6 +59,9 @@ public class UserController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private VerificationTokenRepository verificationTokenRepository;
 
 
     @Autowired
@@ -97,6 +111,14 @@ public class UserController {
 				x.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 				x.setRole(ERole.valueOf(registerDTO.getRole()));
 				authControlRepository.save(x);
+
+				String token = generateVerificationToken(x);
+					mailService.sendMail(new NotificationEmail("Please activate your account",
+					x.getEmail(), "Thank you for signing up to Spring Reddit, " +
+					"please click on the below url to activate your account : " +
+					"http://localhost:8080/api/auth/accountVerification/" + token));
+
+
 
 				UserPassDTO userPass = new UserPassDTO();
 				userPass.setAge(registerDTO.getAge());
@@ -152,28 +174,34 @@ public class UserController {
 
 
 	}
-//    
-//    @PostMapping(value="/changepassword", consumes ="application/json")
-//    public ResponseEntity  changePassword(@RequestBody ChangePasswordDTO changePasswordDTO, HttpServletResponse response) {
-//    	
-//    	UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//    	String username = userDetails.getUsername();
-//    	String password = userDetails.getPassword();
-//    	String oldPassword = changePasswordDTO.getOldPassword();
-//    	String oldPasswordEncrypted = passwordEncoder.encode(oldPassword);
-//    	
-//    	AuthControl x = authControlRepository.findById(username).orElse(null);
-//    	
-//    	if (oldPasswordEncrypted.matches(password)) {
-//    		x.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
-//    		authControlRepository.save(x);	
-//    		throw new ResponseStatusException(HttpStatus.ACCEPTED, "Password changed successfully");
-//    	}
-//    	
-//    	throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad request for password change");   	
-//    	   	
-//    }
-    
+
+	private String generateVerificationToken(AuthControl authControl) {
+		String token = UUID.randomUUID().toString();
+		VerificationToken verificationToken = new VerificationToken();
+		verificationToken.setToken(token);
+		verificationToken.setAuthControl(authControl);
+
+		verificationTokenRepository.save(verificationToken);
+		return token;
+	}
+
+	//@Transactional
+	private void fetchUserAndEnable(VerificationToken verificationToken) {
+		String username = verificationToken.getAuthControl().getUsername();
+		AuthControl authControl = authControlRepository.findAuthControlByUsername(username).orElseThrow(() -> new SpringTwitterException("User not found with name - " + username));
+		authControl.setEnabled(true);
+		authControlRepository.save(authControl);
+	}
+
+	public void verifyAccount(String token) {
+		Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+		verificationToken.orElseThrow(() -> new SpringTwitterException("Invalid Token"));
+		fetchUserAndEnable(verificationToken.get());
+	}
+
+
+
+
     @PostMapping("/changepassword")
     public ResponseEntity changePassword(Authentication auth, @RequestBody ChangePasswordDTO changePasswordDTO){
     	
