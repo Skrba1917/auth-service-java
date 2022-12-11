@@ -12,6 +12,9 @@ public class RegisterDTO {
 	private String username;
 	@Pattern(regexp="^[a-zA-Z0-9]{8}", message="The password is invalid")
 	private String password;
+
+	@NotBlank
+	private String email;
 	@NotBlank
 	private String sex;
 
@@ -54,6 +57,15 @@ public class RegisterDTO {
 	public void setCity(String city) {
 		this.city = city;
 	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getName() {
 		return name;
 	}

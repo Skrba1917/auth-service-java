@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface AuthControlRepository  extends JpaRepository<AuthControl, String> {
 
-    Optional<AuthControl> findAuthControlByUsername(String username);
+    Optional<AuthControl> findByUsername(String username);
 
 }

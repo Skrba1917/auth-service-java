@@ -18,13 +18,13 @@ public class AuthControl {
 	
 	@javax.persistence.Id
 	@Column(name="Username", unique=true, nullable=false)
-	private String Username;
+	private String username;
 	
 	@Column(name="Password", unique=false, nullable=false)
-	private String Password;
+	private String password;
 	
 	@Column(name="Role", unique=false, nullable=false)
-	private ERole Role;
+	private ERole role;
 
 	@Column(name="Email", unique = false, nullable = false)
 	private String email;
@@ -39,28 +39,28 @@ public class AuthControl {
 		this.enabled = enabled;
 	}
 
-	public ERole getRole() {
-		return Role;
-	}
-
-	public void setRole(ERole role) {
-		Role = role;
-	}
-
 	public String getUsername() {
-		return Username;
+		return username;
 	}
 
 	public void setUsername(String username) {
-		Username = username;
+		this.username = username;
 	}
 
 	public String getPassword() {
-		return Password;
+		return password;
 	}
 
 	public void setPassword(String password) {
-		Password = password;
+		this.password = password;
+	}
+
+	public ERole getRole() {
+		return role;
+	}
+
+	public void setRole(ERole role) {
+		this.role = role;
 	}
 
 	public String getEmail() {

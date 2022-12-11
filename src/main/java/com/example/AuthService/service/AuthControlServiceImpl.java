@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.example.AuthService.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import com.example.AuthService.dto.LoginDTO;
@@ -20,6 +21,7 @@ public class AuthControlServiceImpl implements AuthControlService {
 		 AuthControl user = authControlRepository.findById(username).get();
 		return user;
 	}
+
 
 
 	

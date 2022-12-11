@@ -109,7 +109,9 @@ public class UserController {
 				AuthControl x = new AuthControl();
 				x.setUsername(registerDTO.getUsername());
 				x.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+				x.setEmail(registerDTO.getEmail());
 				x.setRole(ERole.valueOf(registerDTO.getRole()));
+				x.setEnabled(false);
 				authControlRepository.save(x);
 
 				String token = generateVerificationToken(x);
@@ -187,8 +189,8 @@ public class UserController {
 
 	//@Transactional
 	private void fetchUserAndEnable(VerificationToken verificationToken) {
-		String username = verificationToken.getAuthControl().getUsername();
-		AuthControl authControl = authControlRepository.findAuthControlByUsername(username).orElseThrow(() -> new SpringTwitterException("User not found with name - " + username));
+		String Username = verificationToken.getAuthControl().getUsername();
+		AuthControl authControl = authControlRepository.findByUsername(Username).orElseThrow(() -> new SpringTwitterException("User not found with name - " + Username));
 		authControl.setEnabled(true);
 		authControlRepository.save(authControl);
 	}
