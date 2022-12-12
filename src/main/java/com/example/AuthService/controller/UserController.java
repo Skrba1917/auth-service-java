@@ -113,7 +113,7 @@ public class UserController {
 
 				String token = generateVerificationToken(x);
 					mailService.sendMail(new NotificationEmail("Please activate your account",
-					x.getEmail(), "Thank you for signing up to Spring Reddit, " +
+					x.getEmail(), "Thank you for signing up to Spring Twitter, " +
 					"please click on the below url to activate your account : " +
 					"http://localhost:8080/auth/accountVerification/" + token));
 
@@ -154,8 +154,16 @@ public class UserController {
 		AuthControl x = new AuthControl();
 		x.setUsername(bla.getUsername());
 		x.setPassword(passwordEncoder.encode(bla.getPassword()));
+		x.setEmail(bla.getEmail());
 		x.setRole(ERole.valueOf(bla.getRole()));
+		x.setEnabled(false);
 		authControlRepository.save(x);
+
+		String token = generateVerificationToken(x);
+		mailService.sendMail(new NotificationEmail("Please activate your business account",
+				x.getEmail(), "Thank you for signing up to Spring Twitter, " +
+				"please click on the below url to activate your account : " +
+				"http://localhost:8080/auth/accountVerification/" + token));
 
 		BusinessPassDTO businessPass = new BusinessPassDTO();
 		businessPass.setUsername(bla.getUsername());

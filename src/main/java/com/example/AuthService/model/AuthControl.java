@@ -1,22 +1,13 @@
 package com.example.AuthService.model;
 
-import static javax.persistence.DiscriminatorType.STRING;
-import static javax.persistence.InheritanceType.SINGLE_TABLE;
-
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Inheritance;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="AuthClass")
 public class AuthControl {
 
 	
-	@javax.persistence.Id
+	@Id
 	@Column(name="Username", unique=true, nullable=false)
 	private String username;
 	

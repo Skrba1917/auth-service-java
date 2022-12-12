@@ -6,9 +6,9 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 import javax.persistence.*;
 
 @Entity
-	@Inheritance(strategy=SINGLE_TABLE)
-	@DiscriminatorColumn(name="type", discriminatorType=STRING)
-	public class User {
+@Inheritance(strategy=SINGLE_TABLE)
+@DiscriminatorColumn(name="type", discriminatorType=STRING)
+public class User {
 		
 		@javax.persistence.Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
