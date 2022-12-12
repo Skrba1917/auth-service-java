@@ -68,6 +68,11 @@ public class UserController {
     public ResponseEntity<TokenDTO> createAuthenticationToken(@Valid
             @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
 
+		AuthControl check = authControlRepository.findByUsername(loginDTO.getUsername()).orElseGet(null);
+		if (!check.isEnabled()) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not Validated");
+		}
+
         // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
         // AuthenticationException
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
