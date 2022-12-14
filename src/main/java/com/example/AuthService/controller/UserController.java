@@ -246,4 +246,23 @@ public class UserController {
 		return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
 	}
 
+	@PostMapping("/profile")
+	public ResponseEntity getProfile(Authentication auth){
+
+		UserDetails userDetails = (UserDetails)auth.getPrincipal();
+		AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElse(null);
+
+		UserAndRole userAndRole = new UserAndRole();
+		userAndRole.setUsername(a.getUsername());
+		userAndRole.setRole(a.getRole().toString());
+
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<UserAndRole> request = new HttpEntity<>(userAndRole);
+
+		String serviceUrl = "http://registracija:8082/users/myProfile";
+		UserAndRole UserPassResponse = restTemplate.postForObject(serviceUrl,
+				request, UserAndRole.class);
+		return new ResponseEntity<UserAndRole>(userAndRole, HttpStatus.CREATED);
+	}
+
 }
