@@ -73,6 +73,14 @@ services:
 #     ports:
 #       - 8083:8083
 
+  mycassandra:
+    image: cassandra
+    container_name: mycassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - ./kasandrabaza:/mycassandra/data
+
 
     # Promenjeno sve na on failure, stavljen api gateway
 
