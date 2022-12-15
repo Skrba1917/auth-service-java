@@ -1,5 +1,6 @@
 package com.example.AuthService.controller;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,8 @@ import javax.validation.Valid;
 
 import com.example.AuthService.dto.*;
 import com.example.AuthService.exceptions.SpringTwitterException;
-import com.example.AuthService.model.NotificationEmail;
-import com.example.AuthService.model.User;
-import com.example.AuthService.model.VerificationToken;
+import com.example.AuthService.model.*;
+import com.example.AuthService.repository.ForgotPasswordRepository;
 import com.example.AuthService.repository.VerificationTokenRepository;
 import com.example.AuthService.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.AuthService.model.AuthControl;
-import com.example.AuthService.model.BusinessUser;
-import com.example.AuthService.model.ERole;
 import com.example.AuthService.repository.AuthControlRepository;
 import com.example.AuthService.security.TokenUtils;
 import com.example.AuthService.service.AuthControlService;
@@ -63,6 +60,10 @@ public class UserController {
 
 	@Autowired
 	private VerificationTokenRepository verificationTokenRepository;
+
+
+	@Autowired
+	private ForgotPasswordRepository forgotPasswordRepository;
 
 
     @Autowired
@@ -282,4 +283,40 @@ public class UserController {
 		return new ResponseEntity<UserAndRole>(userAndRole, HttpStatus.OK);
 	}
 
+
+	@PostMapping("/forgotPasswordEnterMail/{email}")
+	public ResponseEntity napraviTokenIPosaljiGa(Authentication auth,@PathVariable("email") String email){
+		UserDetails userDetails = (UserDetails)auth.getPrincipal();
+		AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElse(null);
+
+		String enteredEmail = email;
+
+		String fpToken = generateForgotPasswordToken(a.getUsername(),email);
+
+		mailService.sendMail(new NotificationEmail("Forgot password token",
+				a.getEmail(), "You've been provided with forgot password token. " +
+				"Copy this token and paste it in provided field: "+ "\n" + fpToken));
+
+		String n = "Your token is created and sent to email adress: " + email;
+		return new ResponseEntity(n,HttpStatus.CREATED);
+	}
+
+
+	private String generateForgotPasswordToken(String username,String email) {
+
+		String token = UUID.randomUUID().toString();
+		ForgotPasswordToken verificationToken = new ForgotPasswordToken();
+		verificationToken.setToken(token);
+		verificationToken.setUsername(username);
+		verificationToken.setEmail(email);
+		verificationToken.setExpireDate(LocalDateTime.now().plusDays(2));
+
+		forgotPasswordRepository.save(verificationToken);
+		return token;
+	}
+
+
+
+//	@GetMapping("/forgotPasswordTokenCheck")
+//	private ResponseEntity
 }
