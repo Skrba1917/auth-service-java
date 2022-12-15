@@ -1,6 +1,8 @@
 package com.example.AuthService.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ import javax.validation.Valid;
 import com.example.AuthService.dto.*;
 import com.example.AuthService.exceptions.SpringTwitterException;
 import com.example.AuthService.model.NotificationEmail;
+import com.example.AuthService.model.User;
 import com.example.AuthService.model.VerificationToken;
 import com.example.AuthService.repository.VerificationTokenRepository;
 import com.example.AuthService.service.MailService;
@@ -31,6 +34,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.AuthService.model.AuthControl;
+import com.example.AuthService.model.BusinessUser;
 import com.example.AuthService.model.ERole;
 import com.example.AuthService.repository.AuthControlRepository;
 import com.example.AuthService.security.TokenUtils;
@@ -246,7 +250,7 @@ public class UserController {
 		return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
 	}
 
-	@PostMapping("/profile")
+	@GetMapping("/profile")
 	public ResponseEntity getProfile(Authentication auth){
 
 		UserDetails userDetails = (UserDetails)auth.getPrincipal();
@@ -259,10 +263,23 @@ public class UserController {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<UserAndRole> request = new HttpEntity<>(userAndRole);
 
-		String serviceUrl = "http://registracija:8082/users/myProfile";
-		UserAndRole UserPassResponse = restTemplate.postForObject(serviceUrl,
-				request, UserAndRole.class);
-		return new ResponseEntity<UserAndRole>(userAndRole, HttpStatus.CREATED);
+		String serviceUrl = "http://registracija:8082/users/myProfile?username={username}&role={role}";
+		Map<String, String> uriParams = new HashMap<String, String>();
+		uriParams.put("username", a.getUsername());
+		uriParams.put("role", a.getRole().toString());
+		System.out.println(a.getUsername() + a.getRole().toString() );
+		
+		if(a.getRole().equals(ERole.User)) {
+			User UserPassResponse = restTemplate.getForObject(serviceUrl, User.class, uriParams);
+			return new ResponseEntity<User>(UserPassResponse, HttpStatus.OK);
+		}
+		if(a.getRole().equals(ERole.BusinessUser)) {
+			BusinessUser UserPassResponse = restTemplate.getForObject(serviceUrl, BusinessUser.class, uriParams);
+			return new ResponseEntity<BusinessUser>(UserPassResponse, HttpStatus.OK);
+		}
+		
+	     
+		return new ResponseEntity<UserAndRole>(userAndRole, HttpStatus.OK);
 	}
 
 }

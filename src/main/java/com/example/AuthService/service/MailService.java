@@ -4,6 +4,8 @@ import com.example.AuthService.exceptions.SpringTwitterException;
 import com.example.AuthService.model.NotificationEmail;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,14 +14,22 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
-@Slf4j
+
 public class MailService {
 
-    private final JavaMailSender mailSender;
-    private final MailContentBuilder mailContentBuilder;
+	@Autowired
+    private JavaMailSender mailSender;
+    private  MailContentBuilder mailContentBuilder;
 
-    @Async
+    
+    public MailService(JavaMailSender mailSender, MailContentBuilder mailContentBuilder) {
+		super();
+		this.mailSender = mailSender;
+		this.mailContentBuilder = mailContentBuilder;
+	}
+
+
+	@Async
     public void sendMail(NotificationEmail notificationEmail) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
@@ -30,9 +40,9 @@ public class MailService {
         };
         try {
             mailSender.send(messagePreparator);
-            log.info("Activation email sent!!");
+            
         } catch (MailException e) {
-            log.error("Exception occurred when sending mail", e);
+           
             throw new SpringTwitterException("Exception occurred when sending mail to " + notificationEmail.getRecipient(), e);
         }
     }
