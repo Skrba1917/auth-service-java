@@ -11,7 +11,7 @@ public class BusinessRegisterDTO {
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9]{1,30}",message = "Invalide username format")
     private String username;
-    @Pattern(regexp="^[a-zA-Z0-9]{8,30}", message="The password is invalid IDIOTA")
+    @Pattern(regexp="^[a-zA-Z0-9]{8,30}", message="The password format is invalid")
     private String password;
 
     @NotBlank

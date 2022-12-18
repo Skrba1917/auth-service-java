@@ -14,4 +14,6 @@ public interface AuthControlRepository  extends JpaRepository<AuthControl, Strin
 
     Optional<AuthControl> findByUsername(String username);
 
+    Optional<AuthControl> findByEmail(String email);
+
 }

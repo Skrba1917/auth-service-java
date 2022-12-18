@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import com.example.AuthService.dto.*;
@@ -35,7 +34,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.AuthService.repository.AuthControlRepository;
 import com.example.AuthService.security.TokenUtils;
-import com.example.AuthService.service.AuthControlService;
 
 
 @RestController
@@ -285,20 +283,26 @@ public class UserController {
 
 
 	@PostMapping("/forgotPasswordEnterMail/{email}")
-	public ResponseEntity napraviTokenIPosaljiGa(Authentication auth,@PathVariable("email") String email){
-		UserDetails userDetails = (UserDetails)auth.getPrincipal();
-		AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElse(null);
+	public ResponseEntity napraviTokenIPosaljiGa(@PathVariable("email") String email){
 
-		String enteredEmail = email;
+		try {
+			AuthControl a = authControlRepository.findByEmail(email).orElse(null);
+			String fpToken = generateForgotPasswordToken(a.getUsername(),email);
 
-		String fpToken = generateForgotPasswordToken(a.getUsername(),email);
+			mailService.sendMail(new NotificationEmail("Forgot password token",
+					a.getEmail(), "You've been provided with forgot password token. " +
+					"Copy this token and paste it in provided field: "+ "\n" + fpToken));
 
-		mailService.sendMail(new NotificationEmail("Forgot password token",
-				a.getEmail(), "You've been provided with forgot password token. " +
-				"Copy this token and paste it in provided field: "+ "\n" + fpToken));
+			String n = "Your token is created and sent to email adress: " + email;
+			return new ResponseEntity(n,HttpStatus.CREATED);
+		}catch (NullPointerException e){
+			System.out.println("There is no user with such email!");
+			throw new RuntimeException("There is no user with such email!");
+		}
 
-		String n = "Your token is created and sent to email adress: " + email;
-		return new ResponseEntity(n,HttpStatus.CREATED);
+
+
+
 	}
 
 
@@ -317,6 +321,23 @@ public class UserController {
 
 
 
-//	@GetMapping("/forgotPasswordTokenCheck")
-//	private ResponseEntity
+	@PostMapping("/forgotPasswordTokenCheck")
+	private ResponseEntity checkForgotPasswordToken(@Valid @RequestBody UsernameAndFPTokenDTO checkToken){
+
+		System.out.println(checkToken.getUsername());
+		System.out.println(checkToken.getForgotPasswordToken());
+		System.out.println(checkToken.getNewpassword());
+
+			ForgotPasswordToken toke = forgotPasswordRepository.findByUsernameAndToken(checkToken.getUsername(),checkToken.getForgotPasswordToken());
+			toke.setUsed(true);
+			forgotPasswordRepository.save(toke);
+			AuthControl b = authControlRepository.findByUsername(checkToken.getUsername()).orElse(null);
+			b.setPassword(passwordEncoder.encode(checkToken.getNewpassword()));
+			authControlRepository.save(b);
+			forgotPasswordRepository.delete(toke);
+			return new ResponseEntity("Password successfully changed!",HttpStatus.OK);
+	}
+
+
+
 }

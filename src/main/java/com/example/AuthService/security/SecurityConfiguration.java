@@ -90,6 +90,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 					.antMatchers(HttpMethod.GET,"/auth/accountVerification/{mytoken}").permitAll()
 					.antMatchers(HttpMethod.POST,"/auth/profile").permitAll()
 					.antMatchers(HttpMethod.POST,"/auth/forgotPasswordEnterMail/{email}").permitAll()
+					.antMatchers(HttpMethod.POST,"/auth/forgotPasswordTokenCheck").permitAll()
 	                //.antMatchers(HttpMethod.GET, "/api/clubs/{id}/**").access("@webSecurity.checkClubId(authentication,request,#id)")
 	                .anyRequest().authenticated();
 

@@ -20,6 +20,8 @@ public class ForgotPasswordToken {
 
     private LocalDateTime expireDate;
 
+    private boolean used;
+
 
     public int getFpId() {
         return fpId;
@@ -61,12 +63,21 @@ public class ForgotPasswordToken {
         this.expireDate = expireDate;
     }
 
-    public ForgotPasswordToken(int fpId, String username, String email, String token,LocalDateTime expireDate) {
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
+    }
+
+    public ForgotPasswordToken(int fpId, String username, String email, String token, LocalDateTime expireDate,boolean used) {
         this.fpId = fpId;
         this.username = username;
         this.email = email;
         this.token = token;
         this.expireDate = expireDate;
+        this.used=used;
     }
 
     public ForgotPasswordToken() {
