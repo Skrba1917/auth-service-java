@@ -81,6 +81,19 @@ services:
     volumes:
       - ./kasandrabaza:/mycassandra/data
 
+  tweetservice:
+      build:
+        context: ~/Desktop/pavlov/tweet-service-java
+        dockerfile: Dockerfile
+      restart: on-failure
+      container_name: tweetservice
+      ports:
+        - 8084:8084
+      depends_on:
+        - mycassandra
+      links:
+        - mycassandra
+
 
     # Promenjeno sve na on failure, stavljen api gateway
 
