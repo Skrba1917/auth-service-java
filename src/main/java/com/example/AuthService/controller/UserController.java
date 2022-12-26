@@ -279,7 +279,7 @@ public class UserController {
 
 
 	@PostMapping("/forgotPasswordEnterMail/{email}")
-	public ResponseEntity napraviTokenIPosaljiGa(@PathVariable("email") String email){
+	public void napraviTokenIPosaljiGa(@PathVariable("email") String email){
 
 		try {
 			AuthControl a = authControlRepository.findByEmail(email).orElse(null);
@@ -288,9 +288,7 @@ public class UserController {
 			mailService.sendMail(new NotificationEmail("Forgot password token",
 					a.getEmail(), "You've been provided with forgot password token. " +
 					"Copy this token and paste it in provided field: "+ "\n" + fpToken));
-
-			String n = "Your token is created and sent to email adress: " + email;
-			return new ResponseEntity(n,HttpStatus.CREATED);
+			System.out.println("Forgot password sent to:"+email);
 		}catch (NullPointerException e){
 			System.out.println("There is no user with such email!");
 			throw new RuntimeException("There is no user with such email!");
@@ -318,7 +316,8 @@ public class UserController {
 
 
 	@PostMapping("/forgotPasswordTokenCheck")
-	private ResponseEntity checkForgotPasswordToken(@Valid @RequestBody UsernameAndFPTokenDTO checkToken){
+	@ResponseBody
+	private void checkForgotPasswordToken(@Valid @RequestBody UsernameAndFPTokenDTO checkToken){
 
 		System.out.println(checkToken.getUsername());
 		System.out.println(checkToken.getForgotPasswordToken());
@@ -331,7 +330,7 @@ public class UserController {
 			b.setPassword(passwordEncoder.encode(checkToken.getNewpassword()));
 			authControlRepository.save(b);
 			forgotPasswordRepository.delete(toke);
-			return new ResponseEntity("Password successfully changed!",HttpStatus.OK);
+		System.out.println( "password succesfully changed");
 	}
 
 
