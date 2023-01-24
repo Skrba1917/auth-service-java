@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.example.AuthService.dto.*;
 import com.example.AuthService.exceptions.SpringTwitterException;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,7 +70,9 @@ public class UserController {
     public ResponseEntity<TokenDTO> createAuthenticationToken(@Valid
             @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
 
-		AuthControl check = authControlRepository.findByUsername(loginDTO.getUsername()).orElseGet(null);
+		AuthControl check = authControlRepository.findByUsername(loginDTO.getUsername()).orElseGet(() -> {throw new NullPointerException();
+		});
+
 		if (!check.isEnabled()) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not Validated");
 		}
@@ -211,14 +216,14 @@ public class UserController {
 	}
 
 
-
-
+	@PreAuthorize("hasRole('ROLE_BusinessUser')")
     @PostMapping("/changepassword")
     public ResponseEntity changePassword(Authentication auth, @RequestBody ChangePasswordDTO changePasswordDTO){
     	
     	  System.out.println(auth);
     	  UserDetails userDetails = (UserDetails)auth.getPrincipal();
-    	  AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElse(null);
+    	  AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElseGet(() -> {throw new NullPointerException();
+		  });
     	  String passwordInSystem = a.getPassword();
     	  String oldPassword = changePasswordDTO.getOldPassword();
     	  String oldPasswordEncrypted = passwordEncoder.encode(oldPassword);
@@ -249,7 +254,8 @@ public class UserController {
 	public ResponseEntity getProfile(Authentication auth){
 
 		UserDetails userDetails = (UserDetails)auth.getPrincipal();
-		AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElse(null);
+		AuthControl a = authControlRepository.findById(userDetails.getUsername()).orElseGet(() -> {throw new NullPointerException();
+		});
 
 		UserAndRole userAndRole = new UserAndRole();
 		userAndRole.setUsername(a.getUsername());
@@ -282,7 +288,8 @@ public class UserController {
 	public void napraviTokenIPosaljiGa(@PathVariable("email") String email){
 
 		try {
-			AuthControl a = authControlRepository.findByEmail(email).orElse(null);
+			AuthControl a = authControlRepository.findByEmail(email).orElseGet(() -> {throw new NullPointerException();
+			});
 			String fpToken = generateForgotPasswordToken(a.getUsername(),email);
 
 			mailService.sendMail(new NotificationEmail("Forgot password token",
@@ -326,7 +333,8 @@ public class UserController {
 			ForgotPasswordToken toke = forgotPasswordRepository.findByUsernameAndToken(checkToken.getUsername(),checkToken.getForgotPasswordToken());
 			toke.setUsed(true);
 			forgotPasswordRepository.save(toke);
-			AuthControl b = authControlRepository.findByUsername(checkToken.getUsername()).orElse(null);
+			AuthControl b = authControlRepository.findByUsername(checkToken.getUsername()).orElseGet(() -> {throw new NullPointerException();
+			});
 			b.setPassword(passwordEncoder.encode(checkToken.getNewpassword()));
 			authControlRepository.save(b);
 			forgotPasswordRepository.delete(toke);
