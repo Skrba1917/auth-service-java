@@ -216,7 +216,7 @@ public class UserController {
 	}
 
 
-	@PreAuthorize("hasRole('ROLE_BusinessUser')")
+	@PreAuthorize("hasAnyRole('ROLE_BusinessUser','ROLE_User')")
     @PostMapping("/changepassword")
     public ResponseEntity changePassword(Authentication auth, @RequestBody ChangePasswordDTO changePasswordDTO){
     	
